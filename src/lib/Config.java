@@ -8,8 +8,19 @@ import java.util.Properties;
 
 public class Config {
         //Đường dẫn tới file config
-        public static final String DEFAULT_NAME = (System.getProperty("user.dir").substring(0, System.getProperty("user.dir").indexOf("StaffManagement") + "StaffManagement".length())) + "\\config.properties";
-        public static Properties p;
+        private static final String DEFAULT_NAME = getConfigFilePath();
+        private static Properties p;
+
+        private static String getConfigFilePath(){
+            try{
+                String filePath = (System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("StaffManagement") + "StaffManagement".length())) + "\\config.properties";
+                System.out.println(filePath);
+                return filePath;
+            }catch (Exception ex){
+                System.err.println(ex.toString());
+                return null;
+            }
+        }
 
         private Config() {
             try {

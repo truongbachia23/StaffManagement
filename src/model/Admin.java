@@ -17,8 +17,7 @@ public class Admin {
     private DB db;
 
     public Admin(String username, String password) {
-        this.username = username;
-
+        //encrypt md5 password
         try {
             byte[] bytesOfPassword = password.getBytes("UTF-8");
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -30,8 +29,10 @@ public class Admin {
             this.password = sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
+            return ;
         }
 
+        this.username = username;
         this.db = new DB();
     }
 

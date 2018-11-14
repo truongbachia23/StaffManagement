@@ -1,5 +1,6 @@
 package lib;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -17,17 +18,33 @@ public class DB {
     private ResultSet result = null; //ResultSet đại diện cho tập hợp các bản ghi lấy do thực hiện truy vấn.
     private ArrayList<ArrayList<String>> kq = null; //Danh sách trả về các bản ghi
 
+    private boolean isConnected(){
+        try{
+            return (conn != null && conn.isValid(10));
+        } catch (Exception ex){
+            return false;
+        }
+    }
+
    /* public static void main(String[] args) {
         DB db = new DB();
+        System.out.println(db.isConnected());
         if (db.select("id,name, username, password", "admin", " 1")) {
             for (ArrayList<String> record : db.getResult()) {
                 System.out.println(record);
             }
         }
-        db.freeConnection();
-    }*/
 
+        try{
+            Thread.sleep(20000);
+        } catch (Exception ex){}
+        System.out.println(db.isConnected());
+        db.autoReconect();
+        System.out.println(db.isConnected());
 
+//        db.freeConnection();
+    }
+*/
     public DB() {
         System.setProperty("file.encoding", "UTF-8");
         DATABASE_MANAGEMENT_SYSTEM = Config.getInstance().get("DATABASE_MANAGEMENT_SYSTEM");
@@ -49,13 +66,14 @@ public class DB {
      * @param n the value of n
      * @return the boolean: có kết nối được không
      */
-    public boolean getConnection(int n) {
+    private boolean getConnection(int n) {
         for (int i = 0; i < n; i++) {
             if (this.getConnection()) {
                 return true;
             } else {
                 try {
-                    Thread.sleep(2000 * i);
+                    System.out.println("Connecting to database");
+                    Thread.sleep(5000 * i);
                 } catch (InterruptedException ex) {
 //                        System.out.println(ex);
                 }
@@ -95,6 +113,17 @@ public class DB {
 //            System.err.println("Không thể đóng kết nối của " + DATABASE + "\n" + e);
         }
     }
+    public boolean warningLostConnection(){
+        if(!this.isConnected()){
+            if(JOptionPane.showConfirmDialog(null, "Do you want to reconect?", "Connection lost!", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+                if(!this.getConnection(3)){
+                    JOptionPane.showMessageDialog(null, "Can't reconect");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     /**
      * Thực thi 1 câu truy vẫn có trả về dữ liệu
@@ -105,6 +134,7 @@ public class DB {
     public boolean executeQuery(String query) {
         //Nếu câu truy vấn không trả về dữ liệu thì nên sử dụng state.execute(sql);, bằng không sẽ báo lỗi
         try {
+            if(!this.warningLostConnection()) return false;
             this.result = this.state.executeQuery(query);
             return true;
         } catch (SQLException ex) {
@@ -122,6 +152,7 @@ public class DB {
      */
     public boolean execute(String query) {
         try {
+            if(!this.warningLostConnection()) return false;
             this.state.execute(query);
             return true;
         } catch (SQLException ex) {

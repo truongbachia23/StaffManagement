@@ -77,7 +77,7 @@ public class AdminController {
         //valid input
         String error = isValidInput(name, birthday, salary, gender, isMarried);
         if (error.equals("")) {
-            if (!this.admin.addStaff(name, MyDateTime.convertStringtoDate(birthday, "dd/MM/yyyy"), Integer.parseInt(salary), convertGender(gender), (isMarried ? "yes" : "no"))) {
+            if (!this.admin.addStaff(name, MyDateTime.convertStringtoDate(birthday, "dd/MM/YYYY"), Integer.parseInt(salary), convertGender(gender), (isMarried ? "yes" : "no"))) {
                 error += "Can't add staff " + name + "\n";
             }
         }
@@ -93,7 +93,7 @@ public class AdminController {
         for (int i = 0; i < staffList.size(); i++) {
             ArrayList<String> staff = staffList.get(i);
             staff.set(4, reconvertGender(staff.get(4)));
-            staff.set(5, (staff.get(5).equals("yes") ? "Đã cưới" : "Độc thân"));
+            staff.set(5, (staff.get(5).equals("yes") ? "Married" : "Single"));
             staffList.set(i, staff);
         }
         return staffList;
